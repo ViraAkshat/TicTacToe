@@ -32,6 +32,7 @@ class TicTacToe:
         
         self.winner = None
         self.game_steps = 0
+        self.font = pygame.font.SysFont('Verdana', CELL_SIZE // 4, True)
     
     def check_winner(self):
         for line_indices in self.line_indices_array:
@@ -61,6 +62,11 @@ class TicTacToe:
     def draw_winner(self):
         if self.winner:
             pygame.draw.line(self.game.screen, 'red', *self.winner_line, CELL_SIZE // 8)
+            label = self.font.render(f'Player "{self.winner}" wins!', True, 'white', 'black')
+            self.game.screen.blit(label, (WIN_SIZE // 2 - label.get_width() // 2, WIN_SIZE // 4))
+        if not self.winner and self.game_steps == 9:
+            label = self.font.render(f'It\'s a tie', True, 'white', 'black')
+            self.game.screen.blit(label, (WIN_SIZE // 2 - label.get_width() // 2, WIN_SIZE // 4))
 
     def draw(self):
         self.game.screen.blit(self.field_image, (0, 0))
@@ -89,12 +95,17 @@ class Game:
         self.clock = pygame.time.Clock()
         self.tic_tac_toe = TicTacToe(self)
 
+    def new_game(self):
+        self.tic_tac_toe = TicTacToe(self)
 
     def check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.new_game()
 
     def run(self):
         while True:
