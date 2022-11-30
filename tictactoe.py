@@ -6,6 +6,7 @@ WIN_SIZE = 450
 CELL_SIZE = WIN_SIZE // 3
 INF = float('inf')
 vec2 = pygame.math.Vector2
+CELL_CENTER = vec2(CELL_SIZE / 2)
 
 class TicTacToe:
     def __init__(self, game):
@@ -37,6 +38,8 @@ class TicTacToe:
             sum_line = sum([self.game_array[i][j] for i, j in line_indices])
             if sum_line in {0, 3}:
                 self.winner = 'XO'[sum_line == 0]
+                self.winner_line = [vec2(line_indices[0][::-1]) * CELL_SIZE + CELL_CENTER,
+                                    vec2(line_indices[2][::-1]) * CELL_SIZE + CELL_CENTER]
 
     def run_game_process(self):
         current_cell = vec2(pygame.mouse.get_pos()) // CELL_SIZE
@@ -55,9 +58,14 @@ class TicTacToe:
                 if obj != INF:
                     self.game.screen.blit(self.x_image if obj else self.o_image, vec2(x, y)*CELL_SIZE)
     
+    def draw_winner(self):
+        if self.winner:
+            pygame.draw.line(self.game.screen, 'red', *self.winner_line, CELL_SIZE // 8)
+
     def draw(self):
         self.game.screen.blit(self.field_image, (0, 0))
         self.draw_objects()
+        self.draw_winner()
 
     @staticmethod
     def get_scaled_image(path, res):
